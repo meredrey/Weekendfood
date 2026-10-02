@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Weekend meals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F3EF; --surface:#FFFFFF; --surface-2:#F7F8F5; --ink:#2C3833; --muted:#66746E; --line:#DCE2DA;
+  --accent:#4F7F6A; --on-accent:#FFFFFF;
+  --sage:#87A28C; --sage-soft:#E2EBE2;
+  --mauve:#94788F; --mauve-soft:#EFE6ED;
+  --lav:#8F86BC; --lav-soft:#EBE9F6;
+  --rose:#B98990; --rose-soft:#F5E8E9;
+  --teal:#548E8B; --teal-soft:#DEEDEC;
+  --shadow:0 1px 2px rgba(44,56,51,.06), 0 8px 24px rgba(44,56,51,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1A201E; --surface:#232B28; --surface-2:#29322E; --ink:#E6EBE8; --muted:#A2AFA9; --line:#36413C;
+    --accent:#9CC2AC; --on-accent:#15201B;
+    --sage:#9CC2AC; --sage-soft:#2C3B32; --mauve:#C9A9C2; --mauve-soft:#3A2F38;
+    --lav:#B7AEE0; --lav-soft:#302E42; --rose:#D9AEB3; --rose-soft:#3C2F31; --teal:#8CC3BF; --teal-soft:#253A38;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1A201E; --surface:#232B28; --surface-2:#29322E; --ink:#E6EBE8; --muted:#A2AFA9; --line:#36413C;
+  --accent:#9CC2AC; --on-accent:#15201B;
+  --sage:#9CC2AC; --sage-soft:#2C3B32; --mauve:#C9A9C2; --mauve-soft:#3A2F38;
+  --lav:#B7AEE0; --lav-soft:#302E42; --rose:#D9AEB3; --rose-soft:#3C2F31; --teal:#8CC3BF; --teal-soft:#253A38;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+}
+:root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); background:var(--bg); }
+*,*::before,*::after{ box-sizing:inherit; }
+body{ margin:0; background:var(--bg); color:var(--ink); font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif; font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+button{ font:inherit; color:inherit; cursor:pointer; }
+:focus-visible{ outline:2.5px solid var(--accent); outline-offset:2px; border-radius:8px; }
+.wrap{ max-width:980px; margin:0 auto; padding:28px 20px 120px; }
+h1,h2,h3{ font-family:"Young Serif",Georgia,"Times New Roman",serif; font-weight:400; margin:0; }
+
+/* header */
+.top{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:22px; }
+.status{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--accent); background:var(--sage-soft); padding:3px 10px; border-radius:999px; margin-bottom:10px; }
+.status.draft{ color:var(--mauve); background:var(--mauve-soft); }
+.status::before{ content:""; width:7px; height:7px; border-radius:50%; background:currentColor; }
+h1{ font-size:clamp(34px,7vw,52px); line-height:1.02; letter-spacing:-.01em; }
+.dates{ color:var(--muted); margin:6px 0 0; font-size:17px; }
+.btn{ border:1px solid var(--line); background:var(--surface); border-radius:12px; padding:10px 16px; font-weight:600; font-size:15px; }
+.btn:hover{ border-color:var(--sage); }
+.btn.primary{ background:var(--accent); color:var(--on-accent); border-color:transparent; }
+.btn.primary:hover{ filter:brightness(1.05); }
+.btn.ghost{ background:transparent; border-color:transparent; color:var(--muted); padding:8px 10px; }
+.btn.ghost:hover{ color:var(--ink); }
+
+.tabs{ display:inline-flex; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:4px; gap:2px; margin-bottom:22px; }
+.tab{ border:0; background:transparent; padding:8px 16px; border-radius:10px; font-weight:600; color:var(--muted); font-size:15px; }
+.tab[aria-selected="true"]{ background:var(--sage-soft); color:var(--ink); }
+.tab .n{ font-weight:500; color:var(--muted); margin-left:4px; }
+
+.banner{ background:var(--lav-soft); border-radius:14px; padding:14px 16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.banner p{ margin:0; }
+
+.dinners{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 22px; color:var(--muted); font-size:14px; }
+.chk{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:1px dashed var(--line); font-weight:600; font-size:12px; letter-spacing:.04em; }
+.chk.done{ border-style:solid; border-color:transparent; }
+.chk.done.family{ background:var(--sage-soft); color:var(--accent); }
+.chk.done.split{ background:var(--mauve-soft); color:var(--mauve); }
+.chk .tick{ font-size:13px; }
+.dinners .warn{ width:100%; color:var(--mauve); }
+
+/* days */
+.days{ display:grid; gap:22px; }
+@media (min-width:780px){ .days{ grid-template-columns:1fr 1fr; } }
+.day{ background:var(--surface); border-radius:22px; padding:20px 18px 10px; box-shadow:var(--shadow); }
+.day-head{ display:flex; align-items:baseline; justify-content:space-between; padding:0 4px 12px; border-bottom:1px solid var(--line); }
+.day-head h2{ font-size:26px; }
+.day-head .d{ color:var(--muted); font-size:15px; }
+.slot{ display:grid; grid-template-columns:56px 1fr auto; gap:14px; align-items:center; padding:14px 4px; border-bottom:1px solid var(--line); }
+.slot:last-child{ border-bottom:0; }
+.meal{ font-size:13px; font-weight:600; color:var(--muted); display:block; }
+
+/* the plate motif */
+.plate{ width:56px; height:56px; border-radius:50%; display:grid; place-items:center; font-size:26px; line-height:1; border:0; padding:0;
+  box-shadow: inset 0 0 0 5px rgba(255,255,255,.55), inset 0 0 0 6px rgba(0,0,0,.04); }
+.plate.empty{ background:transparent; box-shadow:none; border:1.5px dashed var(--line); color:var(--muted); font-size:22px; font-family:"Young Serif",serif; }
+.c-breakfast{ background:var(--lav-soft); } .c-snack{ background:var(--rose-soft); } .c-lunch{ background:var(--teal-soft); }
+.c-family{ background:var(--sage-soft); } .c-split{ background:var(--mauve-soft); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .plate{ box-shadow: inset 0 0 0 5px rgba(255,255,255,.06); } }
+
+.slot.is-empty{ cursor:pointer; background:transparent; border-left:0; border-right:0; border-top:0; width:100%; text-align:left; }
+.slot.is-empty:hover .plate.empty{ border-color:var(--sage); color:var(--accent); }
+.select-label{ font-weight:600; color:var(--accent); font-size:15px; }
+.name{ background:none; border:0; padding:0; text-align:left; font-weight:600; font-size:16px; line-height:1.3; }
+.name:hover{ text-decoration:underline; text-decoration-color:var(--line); text-underline-offset:3px; }
+.desc{ margin:3px 0 0; color:var(--muted); font-size:14px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.badge{ display:inline-block; font-size:11px; font-weight:700; letter-spacing:.05em; padding:2px 8px; border-radius:6px; vertical-align:2px; margin-left:6px; white-space:nowrap; }
+.badge.family{ background:var(--sage-soft); color:var(--accent); }
+.badge.split{ background:var(--mauve-soft); color:var(--mauve); }
+.slot-actions{ display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
+.link{ background:none; border:0; color:var(--muted); font-size:14px; font-weight:500; padding:4px 6px; border-radius:8px; }
+.link:hover{ color:var(--ink); background:var(--surface-2); }
+
+/* footer bar */
+.bar{ position:fixed; left:0; right:0; bottom:0; padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-top:1px solid var(--line); z-index:5; }
+.bar-in{ max-width:980px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.progress{ font-size:15px; color:var(--muted); }
+.progress b{ color:var(--ink); }
+.dots{ display:flex; gap:4px; margin-top:4px; }
+.dots i{ width:16px; height:5px; border-radius:3px; background:var(--line); }
+.dots i.on{ background:var(--sage); }
+
+/* shopping */
+.shop{ background:var(--surface); border-radius:22px; padding:8px 22px 18px; box-shadow:var(--shadow); max-width:640px; }
+.shop-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:14px 0 4px; flex-wrap:wrap; }
+.shop-head p{ margin:0; color:var(--muted); font-size:14px; }
+.group h3{ font-size:19px; margin:22px 0 6px; }
+.item{ display:flex; align-items:center; gap:12px; padding:10px 2px; border-bottom:1px solid var(--line); cursor:pointer; }
+.item:last-child{ border-bottom:0; }
+.item input{ appearance:none; -webkit-appearance:none; width:22px; height:22px; border:1.5px solid var(--line); border-radius:7px; margin:0; flex:none; display:grid; place-items:center; background:var(--surface); cursor:pointer; }
+.item input:checked{ background:var(--accent); border-color:var(--accent); }
+.item input:checked::after{ content:""; width:6px; height:11px; border:solid var(--on-accent); border-width:0 2px 2px 0; transform:rotate(45deg) translate(-1px,-1px); }
+.item .nm{ flex:1; }
+.item .q{ color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; font-size:15px; }
+.item.done .nm, .item.done .q{ color:var(--muted); text-decoration:line-through; text-decoration-color:var(--line); }
+.empty-state{ text-align:center; padding:48px 20px; color:var(--muted); }
+.empty-state h2{ color:var(--ink); font-size:24px; margin-bottom:8px; }
+
+/* sheet */
+.overlay{ position:fixed; inset:0; background:rgba(28,36,33,.38); z-index:20; display:flex; align-items:flex-end; justify-content:center; }
+.overlay[hidden]{ display:none; }
+.panel{ background:var(--bg); width:100%; max-width:680px; max-height:92%; border-radius:24px 24px 0 0; display:flex; flex-direction:column; overflow:hidden; padding-bottom:env(safe-area-inset-bottom,0px); animation:up .22s ease-out; }
+@media (min-width:720px){ .overlay{ align-items:center; } .panel{ border-radius:24px; max-height:88%; } }
+@keyframes up{ from{ transform:translateY(24px); opacity:.6; } to{ transform:none; opacity:1; } }
+@media (prefers-reduced-motion: reduce){ .panel{ animation:none; } }
+.panel-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:16px 18px 10px; }
+.panel-head h2{ font-size:22px; }
+.panel-head h2:focus{ outline:none; }
+.x{ width:38px; height:38px; border-radius:50%; border:0; background:var(--surface); font-size:20px; line-height:1; flex:none; }
+.panel-body{ overflow:auto; padding:0 18px 20px; -webkit-overflow-scrolling:touch; }
+.panel-foot{ padding:12px 18px; border-top:1px solid var(--line); background:var(--bg); }
+.panel-foot .btn{ width:100%; padding:13px; font-size:16px; }
+
+.filters{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.chip{ border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:6px 12px; font-size:14px; font-weight:500; }
+.chip[aria-pressed="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+.hint{ font-size:14px; color:var(--mauve); margin:4px 0 8px; }
+.list{ display:grid; gap:10px; margin-top:12px; }
+.pick{ display:grid; grid-template-columns:56px 1fr auto; gap:14px; align-items:center; background:var(--surface); border-radius:16px; padding:12px 14px; border:1.5px solid transparent; }
+.pick.current{ border-color:var(--sage); }
+.pick .meta{ font-size:13px; color:var(--muted); margin-top:4px; }
+.pick .desc{ -webkit-line-clamp:3; }
+
+/* recipe */
+.card{ border-radius:20px; padding:22px 20px; display:grid; grid-template-columns:auto 1fr; gap:18px; align-items:center; margin-bottom:16px; }
+.card .plate{ width:84px; height:84px; font-size:40px; background:var(--surface); }
+.card h3{ font-size:24px; line-height:1.15; }
+.card p{ margin:6px 0 0; font-size:15px; }
+.stats{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.stat{ background:var(--surface); border-radius:12px; padding:8px 12px; font-size:14px; }
+.stat b{ display:block; font-size:16px; }
+.stat span{ color:var(--muted); font-size:13px; }
+.note{ background:var(--surface); border-left:3px solid var(--rose); border-radius:0 12px 12px 0; padding:10px 14px; font-size:15px; margin-bottom:18px; }
+.sec h4{ font-family:"Young Serif",serif; font-weight:400; font-size:19px; margin:18px 0 8px; display:flex; align-items:baseline; gap:8px; }
+.sec h4 small{ font-family:"Figtree",sans-serif; font-size:14px; color:var(--muted); }
+.tbl-wrap{ overflow-x:auto; background:var(--surface); border-radius:14px; }
+table{ width:100%; border-collapse:collapse; font-size:15px; }
+th,td{ padding:9px 12px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; }
+tr:last-child td{ border-bottom:0; }
+th{ font-size:13px; color:var(--muted); font-weight:600; }
+td.q, th.q{ text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+td small{ color:var(--muted); display:block; font-size:13px; }
+ol.steps{ margin:0; padding:0; list-style:none; counter-reset:s; }
+ol.steps li{ counter-increment:s; display:grid; grid-template-columns:30px 1fr; gap:8px; padding:8px 0; line-height:1.5; }
+ol.steps li::before{ content:counter(s); width:26px; height:26px; border-radius:50%; background:var(--sage-soft); color:var(--accent); font-weight:700; font-size:13px; display:grid; place-items:center; margin-top:-1px; }
+
+/* recipes tab + editor */
+.rx{ background:var(--surface); border-radius:22px; padding:8px 22px 18px; box-shadow:var(--shadow); max-width:720px; }
+.rx-row{ display:grid; grid-template-columns:56px 1fr auto; gap:14px; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); }
+.rx-row:last-child{ border-bottom:0; }
+.mark{ font-size:12px; color:var(--muted); margin-left:8px; font-weight:600; }
+.muted{ color:var(--muted); font-size:14px; margin:4px 0; }
+.add-new{ width:100%; margin-top:12px; border-style:dashed; }
+.ed{ display:grid; gap:14px; }
+.f{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+.f > span{ font-size:13px; font-weight:600; color:var(--muted); }
+.f input, .f select, .f textarea{ font:inherit; font-size:16px; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:9px 11px; width:100%; min-width:0; }
+.f textarea{ resize:vertical; line-height:1.45; }
+.f input:disabled{ opacity:.45; }
+.f input:focus, .f select:focus, .f textarea:focus{ outline:2px solid var(--accent); outline-offset:0; border-color:transparent; }
+.ed-3{ display:grid; grid-template-columns:2fr 1fr 1fr; gap:10px; }
+.ed-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.seg, .cbs{ display:flex; flex-wrap:wrap; gap:8px; }
+.cb{ display:inline-flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-size:14px; cursor:pointer; }
+.cb input{ accent-color:var(--accent); margin:0; }
+.ed-h{ font-family:"Young Serif",serif; font-weight:400; font-size:19px; margin:8px 0 -4px; }
+.ing-list{ display:grid; gap:8px; }
+.ing-row{ position:relative; display:grid; grid-template-columns:1fr 1fr; gap:8px; background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:10px 12px 12px; }
+.ing-row .full{ grid-column:1 / -1; }
+.ing-row .full:first-child input{ padding-right:40px; }
+.ing-row .qty{ grid-column:1 / -1; display:grid; grid-template-columns:repeat(auto-fit, minmax(80px,1fr)); gap:8px; }
+.ing-x{ position:absolute; top:30px; right:16px; width:30px; height:30px; border-radius:50%; border:0; background:transparent; color:var(--muted); font-size:20px; line-height:1; }
+.ing-x:hover{ background:var(--rose-soft); color:var(--ink); }
+.add-row{ justify-self:start; border-style:dashed; }
+.ed-foot{ display:flex; gap:8px; align-items:center; }
+.ed-foot .btn{ width:auto; padding:11px 16px; font-size:15px; }
+.ed-left{ flex:1; display:flex; flex-wrap:wrap; gap:2px; }
+.danger{ color:var(--mauve); }
+.err{ color:var(--mauve); font-weight:600; margin:8px 0 0; min-height:1px; }
+@media (max-width:480px){ .ed-3{ grid-template-columns:1fr 1fr; } .ed-3 .f:first-child{ grid-column:1 / -1; } .tab{ padding:8px 12px; } }
+
+.toast{ position:fixed; left:50%; bottom:calc(92px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:12px; font-size:15px; z-index:30; opacity:0; pointer-events:none; transition:opacity .2s; }
+.toast.on{ opacity:1; }
+.sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+@media (max-width:420px){
+  .wrap{ padding:20px 14px 120px; }
+  .day{ padding:16px 12px 6px; border-radius:18px; }
+  .slot{ grid-template-columns:48px 1fr auto; gap:10px; }
+  .plate{ width:48px; height:48px; font-size:22px; }
+  .pick{ grid-template-columns:48px 1fr; }
+  .pick .choose{ grid-column:1 / -1; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <span id="status" class="status"></span>
+      <h1 id="title">This weekend</h1>
+      <p class="dates" id="dates"></p>
+    </div>
+    <button class="btn" data-act="new">New weekend plan</button>
+  </header>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-plan" data-act="tab" data-tab="plan">Plan</button>
+    <button class="tab" role="tab" id="tab-shop" data-act="tab" data-tab="shop">Shopping list <span class="n" id="shopN"></span></button>
+    <button class="tab" role="tab" id="tab-rx" data-act="tab" data-tab="rx">Recipes</button>
+  </div>
+  <main id="main"></main>
+</div>
+<div class="bar" id="bar"><div class="bar-in" id="barIn"></div></div>
+<div class="overlay" id="overlay" hidden><div class="panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" id="panel"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================
+   DATA — to add a recipe: add any new ingredients to INGREDIENTS,
+   then add one object to BASE_RECIPES. (Recipes added in the app are stored separately.) Quantities are per person:
+   [ingredientId, mama, tata, perKid, optionalNote]
+   For ADULTS + KIDS dinners use `sections` (see "lasagne").
+   ========================================================= */
+const GROUPS = [
+  ['veg','Fruit & vegetables'],['dairy','Dairy & eggs'],['bakery','Bakery'],
+  ['pantry','Pantry'],['frozen','Frozen'],['other','Other']
+];
+const KIDS = 2;
+const INGREDIENTS = {
+  eggs:['Jajka','szt.','dairy'], butter:['Masło','g','dairy'], creamcheese:['Serek kanapkowy','g','dairy'],
+  greekyog:['Jogurt grecki / naturalny','g','dairy'], natyog:['Jogurt naturalny','g','dairy'], skyr:['Skyr naturalny','g','dairy'],
+  mozz:['Mozzarella','g','dairy'], cheese:['Ser żółty (gouda / cheddar)','g','dairy'], parm:['Parmezan','g','dairy'],
+  cottage:['Serek wiejski','g','dairy'], halloumi:['Halloumi','g','dairy'], camembert:['Camembert','szt.','dairy'],
+  ricotta:['Ricotta','g','dairy'], milk:['Mleko','ml','dairy'],
+  bread:['Pieczywo (chleb / bułki)','g','bakery'], baguette:['Bagietka','g','bakery'], croutons:['Grzanki','g','bakery'],
+  tomato:['Pomidory','g','veg'], cucumber:['Ogórek','g','veg'], pepper:['Papryka','g','veg'], lettuce:['Sałata','g','veg'],
+  redonion:['Cebula czerwona','g','veg'], onion:['Cebula','g','veg'], garlic:['Czosnek','ząb.','veg'],
+  banana:['Banany','szt.','veg'], blueberries:['Borówki','g','veg'], apple:['Jabłka','szt.','veg'], grapes:['Winogrona','g','veg'],
+  fruit:['Owoce sezonowe','g','veg'], cherrytom:['Pomidorki koktajlowe','g','veg'], rocket:['Rukola','g','veg'],
+  spinach:['Szpinak świeży','g','veg'], cabbage:['Kapusta biała','g','veg'], carrot:['Marchew','g','veg'],
+  potatoes:['Ziemniaki','g','veg'], mushrooms:['Pieczarki','g','veg'],
+  granola:['Granola','g','pantry'], pb:['Masło orzechowe','g','pantry'], rice:['Ryż','g','pantry'],
+  pasta:['Makaron (penne / świderki)','g','pantry'], spaghetti:['Spaghetti','g','pantry'], lasagne:['Płaty lasagne','g','pantry'],
+  pesto:['Pesto','g','pantry'], tomsauce:['Sos pomidorowy gotowy (Biedronka)','g','pantry'], passata:['Passata pomidorowa','g','pantry'],
+  cantom:['Pomidory krojone (puszka)','g','pantry'], broth:['Bulion warzywny','ml','pantry'], oats:['Płatki owsiane','g','pantry'],
+  cinnamon:['Cynamon','','pantry'], oregano:['Oregano','','pantry'], chickpeas:['Ciecierzyca (puszka, po odsączeniu)','g','pantry'],
+  coconut:['Mleko kokosowe','ml','pantry'], curry:['Pasta curry łagodna','g','pantry'], gochujang:['Gochujang','g','pantry'],
+  soy:['Sos sojowy','ml','pantry'], starch:['Skrobia ziemniaczana','g','pantry'], honey:['Miód','g','pantry'],
+  sesame:['Sezam','g','pantry'], oil:['Oliwa / olej','ml','pantry'], crackers:['Krakersy','g','pantry'],
+  ketchup:['Ketchup','g','pantry'], mayo:['Majonez','g','pantry'], walnuts:['Orzechy włoskie','g','pantry'], olives:['Oliwki','g','pantry'],
+  edamame:['Edamame','g','frozen'], frozspinach:['Szpinak mrożony','g','frozen'],
+  smokedtofu:['Tofu wędzone','g','other'], tofu:['Tofu naturalne','g','other'], pizzadough:['Ciasto do pizzy (gotowe)','g','other']
+};
+
+const BASE_RECIPES = [
+  /* ---------- BREAKFAST ---------- */
+  { id:'jajecznica', cat:'breakfast', name:'Jajecznica z pieczywem i warzywami', emoji:'🍳', time:15, tags:['quick','kid'], kcal:[450,600],
+    desc:'Jajecznica na maśle, pieczywo z serkiem i chrupiące świeże warzywa.',
+    kids:'Dzieci: 1 jajko, mała kromka z masłem lub serkiem i warzywo w słupkach.',
+    items:[['eggs',2,3,1],['butter',10,10,5],['bread',60,90,30],['creamcheese',20,30,10,'lub hummus'],['tomato',80,100,30],['cucumber',60,80,40]],
+    steps:['Pokrój pomidory i ogórka; dzieciom w słupki.','Roztop masło na patelni na małym ogniu.','Wbij jajka i mieszaj powoli szpatułką, aż się zetną (3–4 min). Dopraw solą.','Posmaruj pieczywo serkiem lub hummusem i podaj z warzywami.'] },
+  { id:'jogurt-granola', cat:'breakfast', name:'Jogurt z granolą i owocami', emoji:'🥣', time:5, tags:['quick','kid'], kcal:[450,600],
+    desc:'Gęsty jogurt, chrupiąca granola, banan lub borówki i łyżka masła orzechowego.',
+    kids:'Dzieci: jogurt, mniej granoli, więcej owoców.',
+    items:[['greekyog',150,200,120],['granola',35,50,20],['banana',0.5,1,0.5],['blueberries',50,60,40],['pb',10,15,0]],
+    steps:['Nałóż jogurt do miseczek.','Posyp granolą tuż przed jedzeniem, żeby została chrupiąca.','Dodaj pokrojonego banana lub borówki.','Dorosłym dodaj łyżkę masła orzechowego.'] },
+  { id:'bagietka', cat:'breakfast', name:'Zapiekana bagietka Subway-style', emoji:'🥖', time:20, tags:['weekend'], kcal:[450,600],
+    desc:'Bagietka zapiekana z mozzarellą lub cheddarem, a po wyjęciu świeże warzywa i sos.',
+    kids:'Dzieci: mały kawałek bagietki z serem, warzywa osobno, łagodny sos lub ketchup.',
+    items:[['baguette',100,150,40],['mozz',40,60,20,'lub cheddar'],['lettuce',20,30,0],['tomato',50,60,30],['cucumber',40,50,30],['pepper',30,40,20],['redonion',15,20,0],['natyog',30,40,0,'sos jogurtowo-czosnkowy (lub pesto)'],['garlic',0.25,0.25,0],['ketchup',0,0,15]],
+    steps:['Rozgrzej piekarnik do 200°C.','Przekrój bagietkę wzdłuż, ułóż ser i zapiekaj 6–8 min, aż się rozpuści.','W tym czasie pokrój warzywa, a jogurt wymieszaj z przeciśniętym czosnkiem i szczyptą soli.','Na gorącą bagietkę nałóż sałatę, pomidor, ogórka, paprykę i cebulę, polej sosem.','Dzieciom podaj bagietkę z serem, a warzywa i ketchup obok.'] },
+
+  /* ---------- SNACK ---------- */
+  { id:'skyr', cat:'snack', name:'Skyr z owocami', emoji:'🫐', time:3, tags:['quick','kid'], kcal:[150,200],
+    desc:'Skyr naturalny z garścią sezonowych owoców. Dużo białka, zero pracy.',
+    kids:'Dzieci: mała miseczka skyru, owoce pokrojone na kawałki.',
+    items:[['skyr',150,200,100],['fruit',80,100,60]],
+    steps:['Nałóż skyr do miseczek.','Dodaj umyte, pokrojone owoce.'] },
+  { id:'jablko-pb', cat:'snack', name:'Jabłko z masłem orzechowym', emoji:'🍏', time:3, tags:['quick','kid'], kcal:[150,200],
+    desc:'Cząstki jabłka do maczania w maśle orzechowym.',
+    kids:'Dzieci: pół jabłka w cząstkach i łyżeczka masła orzechowego.',
+    items:[['apple',1,1,0.5],['pb',15,20,8]],
+    steps:['Pokrój jabłka w cząstki i usuń gniazda nasienne.','Podaj z masłem orzechowym w małej miseczce do maczania.'] },
+  { id:'mini-deska', cat:'snack', name:'Mini deska', emoji:'🍇', time:5, tags:['quick','kid'], kcal:[250,350],
+    desc:'Kostki sera, winogrona lub jabłko i garść krakersów na wspólnej desce.',
+    kids:'Dzieci: ser w kostkach, winogrona przekrojone na pół, kilka krakersów.',
+    items:[['cheese',30,40,20],['grapes',80,100,60,'lub jabłko'],['crackers',20,25,15]],
+    steps:['Pokrój ser w kostki.','Umyj winogrona; dzieciom przekrój je na pół.','Ułóż wszystko na desce razem z krakersami.'] },
+
+  /* ---------- LUNCH ---------- */
+  { id:'pomidorowa', cat:'lunch', name:'Pomidorowa z ryżem', emoji:'🍅', time:40, tags:['kid','weekend'], kcal:[400,550],
+    desc:'Domowa pomidorowa na bulionie warzywnym z ryżem. Ulubiona zupa dzieci.',
+    kids:'Dzieci: pomidorowa z ryżem, bez dodatków.',
+    items:[['broth',250,300,200],['passata',150,200,100],['carrot',40,40,20],['rice',50,70,30],['natyog',30,30,15,'do zabielenia'],['parm',10,15,0],['croutons',15,25,0]],
+    steps:['Ugotuj ryż według opakowania.','Marchew pokrój w plasterki i gotuj w bulionie 15 min.','Dodaj passatę, gotuj jeszcze 10 min; dopraw solą i szczyptą cukru.','Zdejmij z ognia i zabiel jogurtem rozmieszanym z odrobiną zupy.','Podaj z ryżem; dorosłym dodaj parmezan, łyżkę jogurtu i grzanki.'] },
+  { id:'pesto', cat:'lunch', name:'Makaron pesto z mozzarellą', emoji:'🌿', time:15, tags:['quick','kid'], kcal:[600,800],
+    desc:'Makaron z pesto, mozzarellą i pomidorkami; dorośli dodatkowo z rukolą.',
+    kids:'Dzieci: makaron z pesto i mozzarellą, pomidorki osobno.',
+    items:[['pasta',90,120,50],['pesto',30,40,15],['mozz',50,60,25,'mini kulki'],['cherrytom',80,100,50],['rocket',15,20,0,'opcjonalnie']],
+    steps:['Ugotuj makaron al dente; zachowaj pół szklanki wody z gotowania.','Wymieszaj makaron z pesto i odrobiną tej wody.','Dodaj mozzarellę i przekrojone pomidorki.','Dorosłym dorzuć garść rukoli; dzieciom podaj pomidorki obok.'] },
+  { id:'placki', cat:'lunch', name:'Placki z serka wiejskiego z jabłkiem', emoji:'🥞', time:30, tags:['kid','weekend'], kcal:[400,600],
+    desc:'Placuszki z serka wiejskiego, jajka i płatków, z tartym jabłkiem i cynamonem.',
+    kids:'Dzieci: małe placuszki z jogurtem i owocami.',
+    items:[['cottage',100,150,50],['eggs',1,1,0.5],['oats',30,45,15,'lub mąka'],['apple',0.5,0.75,0.25],['cinnamon'],['oil',5,8,3],['natyog',80,100,50],['fruit',0,0,60]],
+    steps:['Wymieszaj serek wiejski z jajkami i płatkami (lub mąką).','Dodaj starte jabłko i szczyptę cynamonu, odstaw na 5 min.','Smaż małe placki na rozgrzanym oleju po 2–3 min z każdej strony.','Podaj z jogurtem; dzieciom dodaj owoce.'] },
+
+  /* ---------- DINNER: FAMILY ---------- */
+  { id:'spaghetti-tofu', cat:'dinner', type:'family', name:'Spaghetti z wędzonym tofu', emoji:'🍝', time:25, tags:['kid'], kcal:[600,800],
+    desc:'Spaghetti w sosie pomidorowym z podsmażonym wędzonym tofu i parmezanem.',
+    kids:'Dzieci mogą dostać tofu drobno pokrojone w sosie albo osobno na talerzu.',
+    items:[['spaghetti',90,120,50],['smokedtofu',80,100,30],['tomsauce',150,180,80],['parm',10,15,5],['oil',5,5,2]],
+    steps:['Ugotuj spaghetti al dente.','Tofu pokrój w drobną kostkę i podsmaż na oliwie na złoto (5–7 min).','Dodaj sos pomidorowy i podgrzewaj 5 min.','Wymieszaj z makaronem i posyp parmezanem.','Dzieciom odłóż tofu osobno, jeśli wolą.'] },
+  { id:'pizza', cat:'dinner', type:'family', name:'Domowa pizza', emoji:'🍕', time:35, tags:['kid','weekend'], kcal:[600,800],
+    desc:'Pizza na gotowym cieście z sosem pomidorowym, mozzarellą i ulubionymi dodatkami.',
+    kids:'Dzieci robią własne małe pizze i same wybierają dodatki.',
+    items:[['pizzadough',150,200,80],['passata',50,60,30],['mozz',60,80,40],['mushrooms',40,50,10],['pepper',30,40,15],['olives',15,20,0],['oregano']],
+    steps:['Rozgrzej piekarnik do 230°C (lub maksymalnie) z blachą w środku.','Rozwałkuj ciasto; z części zrób małe placki dla dzieci.','Posmaruj passatą z oregano i solą, rozłóż mozzarellę i dodatki.','Piecz 10–12 min, aż brzegi się zarumienią.'] },
+  { id:'puree-coleslaw', cat:'dinner', type:'family', name:'Puree z coleslawem i halloumi', emoji:'🥔', time:35, tags:['kid','weekend'], kcal:[600,800],
+    desc:'Kremowe puree ziemniaczane, świeży coleslaw i halloumi lub jajko sadzone.',
+    kids:'Dzieci: puree, jajko sadzone, ogórek i mała łyżka coleslawu.',
+    items:[['potatoes',250,300,150],['butter',10,15,5],['milk',50,60,30],['cabbage',80,100,20],['carrot',30,40,10],['natyog',30,40,10],['mayo',10,15,0],['halloumi',60,80,0,'lub 1–2 jajka sadzone'],['eggs',0,0,1],['cucumber',0,0,40]],
+    steps:['Obierz ziemniaki i gotuj w osolonej wodzie ok. 20 min.','Kapustę poszatkuj, marchew zetrzyj; wymieszaj z jogurtem, majonezem, solą i pieprzem.','Odcedź ziemniaki i utłucz z masłem i ciepłym mlekiem.','Halloumi pokrój w plastry i smaż na suchej patelni po 2 min z każdej strony.','Dzieciom usmaż jajka sadzone i podaj z ogórkiem.'] },
+  { id:'camembert', cat:'dinner', type:'family', name:'Pieczony camembert', emoji:'🧀', time:25, tags:['weekend'], kcal:[550,750],
+    desc:'Camembert zapiekany z miodem i orzechami, do maczania pieczywem, z warzywami i owocami.',
+    kids:'Dzieci: odrobina sera z pieczywem, warzywa i owoce w słupkach. Dorośli mogą dostać więcej dodatków.',
+    items:[['camembert',0.5,0.5,0.25],['baguette',80,120,40],['honey',10,10,0],['walnuts',10,15,0],['cherrytom',80,100,40],['cucumber',60,80,40],['pepper',50,60,30],['grapes',60,80,50]],
+    steps:['Rozgrzej piekarnik do 200°C.','Natnij skórkę camemberta w kratkę i połóż na papierze do pieczenia.','Polej miodem, posyp orzechami i piecz 12–15 min.','Pokrój bagietkę, warzywa i owoce.','Podawaj od razu, póki ser jest płynny.'] },
+
+  /* ---------- DINNER: ADULTS + KIDS ---------- */
+  { id:'lasagne', cat:'dinner', type:'split', name:'Lasagne ze szpinakiem', kidsName:'Makaron z łagodnym sosem pomidorowym i serem', emoji:'🥬', time:60, tags:['kid','weekend'], kcal:[600,750],
+    desc:'Dorośli: lasagne ze szpinakiem, ricottą i mozzarellą. Dzieci: prosty makaron z sosem i serem.',
+    sections:[
+      { who:'adults', items:[['lasagne',70,90],['frozspinach',100,120],['ricotta',80,100],['mozz',40,60],['passata',150,180],['garlic',1,1],['parm',10,10]] },
+      { who:'kids', items:[['pasta',50],['tomsauce',80,'łagodny'],['cheese',20]] }
+    ],
+    steps:{ adults:['Rozgrzej piekarnik do 190°C.','Rozmroź szpinak na patelni z czosnkiem, odparuj wodę; wymieszaj z ricottą, solą i gałką muszkatołową.','W naczyniu układaj warstwy: passata, płaty, szpinak z ricottą. Powtórz 3 razy.','Ostatnią warstwę polej passatą, posyp mozzarellą i parmezanem.','Piecz 25 min pod folią i 15 min bez. Odstaw na 10 min przed krojeniem.'],
+            kids:['Ugotuj makaron.','Podgrzej sos pomidorowy i wymieszaj z makaronem.','Posyp startym serem.'] } },
+  { id:'curry', cat:'dinner', type:'split', name:'Curry z ciecierzycą', kidsName:'Ryż z łagodnym sosem pomidorowo-kokosowym', emoji:'🍛', time:35, tags:['kid','weekend'], kcal:[600,750],
+    desc:'Dorośli: curry z ciecierzycą, pomidorami, mlekiem kokosowym i szpinakiem. Dzieci: ryż z łagodnym sosem.',
+    sections:[
+      { who:'adults', items:[['onion',40,50],['garlic',1,1],['curry',10,10],['chickpeas',120,150],['cantom',120,150],['coconut',80,100],['spinach',40,50],['rice',70,90]] },
+      { who:'kids', items:[['rice',40],['cantom',60],['coconut',40],['chickpeas',30,'opcjonalnie']] }
+    ],
+    steps:{ adults:['Ugotuj ryż dla wszystkich.','Zeszklij cebulę z czosnkiem, dodaj pomidory i mleko kokosowe; gotuj 10 min.','Odlej porcję sosu dla dzieci, zanim dodasz przyprawy.','Do reszty dodaj pastę curry i ciecierzycę, gotuj 10 min.','Na koniec wmieszaj szpinak, aż zwiędnie. Podaj z ryżem.'],
+            kids:['Odlany łagodny sos zostaw tak, jak jest, albo zmiksuj na gładko.','Podaj z ryżem; ciecierzycę obok, jeśli dzieci mają ochotę.'] } },
+  { id:'korean-tofu', cat:'dinner', type:'split', name:'Tofu po koreańsku', kidsName:'Łagodne chrupiące tofu z ryżem i ogórkiem', emoji:'🥢', time:30, tags:['kid'], kcal:[650,800],
+    desc:'Dorośli: chrupiące tofu w sosie gochujang z ryżem, ogórkiem i edamame. Dzieci: to samo tofu bez ostrego sosu.',
+    sections:[
+      { who:'adults', items:[['tofu',125,150],['starch',10,15],['oil',8,10],['gochujang',15,20],['soy',10,15],['honey',5,10],['sesame',3,5],['rice',70,80],['cucumber',80,100],['edamame',60,80]] },
+      { who:'kids', items:[['tofu',50],['starch',5],['oil',3],['rice',40],['cucumber',50],['soy',5,'osobno, do maczania']] }
+    ],
+    steps:{ adults:['Ugotuj ryż; edamame zalej wrzątkiem na 3 min.','Tofu odsącz, pokrój w kostkę i obtocz w skrobi.','Smaż na oleju na chrupko, 8–10 min, obracając.','Odłóż porcję dla dzieci.','Wymieszaj gochujang, sos sojowy, miód i łyżkę wody; obtocz w nim resztę tofu na patelni przez minutę. Posyp sezamem.'],
+            kids:['Podaj chrupiące tofu bez sosu, z ryżem i ogórkiem w plasterkach.','Sos sojowy postaw obok do maczania.'] } }
+];
+
+/* =========================================================
+   APP
+   ========================================================= */
+const isBase = id => BASE_RECIPES.some(b => b.id === id);
+function allIngredients(){ return Object.assign({}, INGREDIENTS, (state && state.custom && state.custom.ingredients) || {}); }
+function ING(id){ return allIngredients()[id] || [id, 'g', 'other']; }
+function allRecipes(){
+  const c = (state && state.custom) || {}, over = c.recipes || {}, del = c.deleted || {};
+  const base = BASE_RECIPES.filter(r => !del[r.id]).map(r => over[r.id] || r);
+  const extra = Object.values(over).filter(r => !isBase(r.id) && !del[r.id]);
+  return base.concat(extra);
+}
+const byId = new Proxy({}, { get: (_, id) => allRecipes().find(r => r.id === id) });
+const MEALS = [['breakfast','Breakfast'],['snack','Snack'],['lunch','Lunch'],['dinner','Dinner']];
+const DAYS = [['sat','Saturday'],['sun','Sunday']];
+const CAT_LABEL = { breakfast:'Breakfast', snack:'Snack', lunch:'Lunch', dinner:'Dinner' };
+const TYPE_LABEL = { family:'FAMILY', split:'ADULTS + KIDS' };
+const LS = 'weekend-meals-v1';
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// --- dates ---
+const isoOf = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parseIso = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const addDays = (s, n) => { const d = parseIso(s); d.setDate(d.getDate()+n); return isoOf(d); };
+function upcomingSaturday(){
+  const d = new Date(); d.setHours(0,0,0,0);
+  const dow = d.getDay();
+  if (dow === 0) d.setDate(d.getDate()-1); else if (dow !== 6) d.setDate(d.getDate() + (6-dow));
+  return isoOf(d);
+}
+const short = s => parseIso(s).toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+function rangeLabel(sat){
+  const a = parseIso(sat), b = parseIso(addDays(sat,1));
+  const mA = a.toLocaleDateString('en-GB',{month:'long'}), mB = b.toLocaleDateString('en-GB',{month:'long'});
+  return mA === mB ? `Saturday ${a.getDate()} and Sunday ${b.getDate()} ${mB}` : `Saturday ${a.getDate()} ${mA} and Sunday ${b.getDate()} ${mB}`;
+}
+const isPast = sat => addDays(sat,1) < isoOf(new Date());
+
+// --- state ---
+function newPlan(sat){
+  return { saturday:sat, status:'draft', checked:{},
+    slots:{ sat:{breakfast:null,snack:null,lunch:null,dinner:null}, sun:{breakfast:null,snack:null,lunch:null,dinner:null} } };
+}
+function loadLocal(){ try { return JSON.parse(localStorage.getItem(LS)); } catch(e){ return null; } }
+let state = loadLocal();
+if (!state || !state.plan) state = { updatedAt:0, plan:newPlan(upcomingSaturday()) };
+normalize();
+let tab = 'plan';
+function normalize(){ state.custom = Object.assign({ recipes:{}, ingredients:{}, deleted:{} }, state.custom || {}); }
+const kc = v => v ? `~${v} kcal` : '–';
+
+function saveLocal(){ try { localStorage.setItem(LS, JSON.stringify(state)); } catch(e){} }
+function commit(){ state.updatedAt = Date.now(); saveLocal(); pushRemote(); render(); }
+
+// --- optional shared sync (works when the page runs inside Claude with storage available) ---
+let docRef = null, pushTimer = null;
+function pushRemote(){
+  if (!docRef) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => { docRef.set({ json: JSON.stringify(state), updatedAt: state.updatedAt }).catch(()=>{}); }, 400);
+}
+(async () => {
+  try {
+    if (!window.claude || !window.claude.use) return;
+    const db = await window.claude.use('db');
+    if (!db) return;
+    docRef = db.doc('family/weekend');
+    docRef.onSnapshot(snap => {
+      if (!snap.exists) { if (state.updatedAt) pushRemote(); return; }
+      const d = snap.data();
+      if (d && d.updatedAt > state.updatedAt) {
+        try { state = JSON.parse(d.json); normalize(); saveLocal(); render(); } catch(e){}
+      } else if (d && d.updatedAt < state.updatedAt) pushRemote();
+    }, () => {});
+  } catch(e){}
+})();
+
+// --- helpers ---
+const sectionsOf = r => r.sections || [{ who:'all', items:r.items }];
+function q(sec, it){
+  if (sec.who === 'all') return { m:it[1]||0, t:it[2]||0, k:it[3]||0, note:it[4] };
+  if (sec.who === 'adults') return { m:it[1]||0, t:it[2]||0, k:0, note:it[3] };
+  return { m:0, t:0, k:it[1]||0, note:it[2] };
+}
+function frac(v){
+  const w = Math.floor(v), f = Math.round((v-w)*4)/4;
+  const fs = {0.25:'¼',0.5:'½',0.75:'¾'}[f] || '';
+  return (w ? String(w) : '') + fs || '0';
+}
+function fmt(v, u){
+  if (!v) return '–';
+  if (u === 'szt.' || u === 'ząb.') return `${frac(v)} ${u}`;
+  return `${v} ${u}`;
+}
+function roundTotal(v, u){
+  if (!u) return '';
+  if (u === 'szt.' || u === 'ząb.') return `${Math.ceil(v - 1e-9)} ${u}`;
+  if (v < 10) return `${Math.ceil(v/5)*5} ${u}`;
+  return `${Math.ceil(v/10)*10} ${u}`;
+}
+const plateClass = r => r.cat === 'dinner' ? `c-${r.type}` : `c-${r.cat}`;
+const badge = r => r.type ? `<span class="badge ${r.type}">${TYPE_LABEL[r.type]}</span>` : '';
+const filledCount = () => DAYS.reduce((n,[d]) => n + MEALS.filter(([m]) => state.plan.slots[d][m]).length, 0);
+
+function shoppingList(){
+  const tot = {};
+  for (const [d] of DAYS) for (const [m] of MEALS) {
+    const r = byId[state.plan.slots[d][m]]; if (!r) continue;
+    for (const sec of sectionsOf(r)) for (const it of sec.items) {
+      const x = q(sec, it);
+      tot[it[0]] = (tot[it[0]] || 0) + x.m + x.t + KIDS * x.k;
+    }
+  }
+  return GROUPS.map(([g, label]) => ({ g, label,
+    items: Object.keys(tot).filter(id => ING(id)[2] === g)
+      .sort((a,b) => ING(a)[0].localeCompare(ING(b)[0], 'pl'))
+      .map(id => ({ id, name:ING(id)[0], qty:roundTotal(tot[id], ING(id)[1]) }))
+  })).filter(g => g.items.length);
+}
+
+// --- render ---
+function render(){
+  const p = state.plan;
+  const st = $('#status');
+  st.textContent = p.status === 'saved' ? 'Current weekend' : 'Draft';
+  st.className = 'status' + (p.status === 'saved' ? '' : ' draft');
+  $('#title').textContent = isPast(p.saturday) ? 'Last weekend' : 'This weekend';
+  $('#dates').textContent = rangeLabel(p.saturday);
+  const list = shoppingList();
+  const total = list.reduce((n,g) => n + g.items.length, 0);
+  $('#shopN').textContent = total ? total : '';
+  $('#tab-plan').setAttribute('aria-selected', tab === 'plan');
+  $('#tab-shop').setAttribute('aria-selected', tab === 'shop');
+  $('#tab-rx').setAttribute('aria-selected', tab === 'rx');
+  $('#main').innerHTML = tab === 'plan' ? renderPlan() : tab === 'shop' ? renderShop(list) : renderRecipes();
+  renderBar();
+}
+
+function renderPlan(){
+  const p = state.plan;
+  let html = '';
+  if (isPast(p.saturday)) {
+    html += `<div class="banner"><p>This plan was for ${short(p.saturday)}–${short(addDays(p.saturday,1))}. Ready to plan the next weekend?</p>
+      <button class="btn primary" data-act="new">New weekend plan</button></div>`;
+  }
+  const types = DAYS.map(([d]) => byId[p.slots[d].dinner]?.type).filter(Boolean);
+  const has = t => types.includes(t);
+  html += `<div class="dinners"><span>Dinners:</span>
+    <span class="chk family ${has('family')?'done':''}"><span class="tick">${has('family')?'✓':'○'}</span>FAMILY</span>
+    <span class="chk split ${has('split')?'done':''}"><span class="tick">${has('split')?'✓':'○'}</span>ADULTS + KIDS</span>
+    ${types.length === 2 && types[0] === types[1] ? `<span class="warn">Both dinners are the same type. The plan usually has one of each.</span>` : ''}
+  </div><div class="days">`;
+  for (const [d, dLabel] of DAYS) {
+    html += `<section class="day" aria-label="${dLabel}"><div class="day-head"><h2>${dLabel}</h2><span class="d">${short(d === 'sat' ? p.saturday : addDays(p.saturday,1))}</span></div>`;
+    for (const [m, mLabel] of MEALS) {
+      const r = byId[p.slots[d][m]];
+      if (!r) {
+        html += `<button class="slot is-empty" data-act="pick" data-day="${d}" data-meal="${m}">
+          <span class="plate empty" aria-hidden="true">+</span>
+          <span><span class="meal">${mLabel}</span><span class="select-label">Select</span></span><span></span></button>`;
+      } else {
+        html += `<div class="slot">
+          <button class="plate ${plateClass(r)}" data-act="recipe" data-id="${r.id}" aria-label="Open recipe: ${esc(r.name)}">${r.emoji}</button>
+          <div><span class="meal">${mLabel}</span>
+            <button class="name" data-act="recipe" data-id="${r.id}">${esc(r.name)}</button>${badge(r)}
+            <p class="desc">${esc(r.desc)}</p></div>
+          <div class="slot-actions">
+            <button class="link" data-act="pick" data-day="${d}" data-meal="${m}">Change</button>
+            <button class="link" data-act="clear" data-day="${d}" data-meal="${m}" aria-label="Remove ${mLabel.toLowerCase()} on ${dLabel}">Remove</button>
+          </div></div>`;
+      }
+    }
+    html += `</section>`;
+  }
+  return html + `</div>`;
+}
+
+function renderShop(list){
+  if (!list.length) return `<div class="shop"><div class="empty-state"><h2>Nothing to buy yet</h2>
+    <p>Choose meals for Saturday and Sunday and the list builds itself.</p>
+    <button class="btn primary" data-act="tab" data-tab="plan">Plan meals</button></div></div>`;
+  const all = list.flatMap(g => g.items);
+  const done = all.filter(i => state.plan.checked[i.id]).length;
+  let html = `<div class="shop"><div class="shop-head"><p>${done} of ${all.length} in the basket</p>
+    ${done ? `<button class="btn ghost" data-act="untick">Untick all</button>` : ''}</div>`;
+  for (const g of list) {
+    html += `<div class="group"><h3>${g.label}</h3>`;
+    for (const i of g.items) {
+      const c = !!state.plan.checked[i.id];
+      html += `<label class="item ${c?'done':''}"><input type="checkbox" data-act="tick" data-id="${i.id}" ${c?'checked':''}>
+        <span class="nm">${esc(i.name)}</span><span class="q">${i.qty || 'check at home'}</span></label>`;
+    }
+    html += `</div>`;
+  }
+  return html + `</div>`;
+}
+
+function renderBar(){
+  const n = filledCount(), saved = state.plan.status === 'saved';
+  const dots = Array.from({length:8}, (_,i) => `<i class="${i<n?'on':''}"></i>`).join('');
+  let btn;
+  if (tab !== 'plan') btn = `<button class="btn" data-act="tab" data-tab="plan">Back to plan</button>`;
+  else if (!saved) btn = `<button class="btn primary" data-act="save" ${n ? '' : 'disabled style="opacity:.5;cursor:default"'}>Save plan</button>`;
+  else btn = `<button class="btn primary" data-act="tab" data-tab="shop">Shopping list</button>`;
+  $('#barIn').innerHTML = `<div class="progress"><b>${n} of 8</b> meals planned<div class="dots" aria-hidden="true">${dots}</div></div>${btn}`;
+}
+
+// --- sheet ---
+let lastFocus = null, picker = null;
+function openSheet(html, keepScroll){
+  if ($('#overlay').hidden) lastFocus = document.activeElement;
+  const prev = keepScroll && $('#panel .panel-body') ? $('#panel .panel-body').scrollTop : 0;
+  $('#panel').innerHTML = html;
+  if (keepScroll) { const b = $('#panel .panel-body'); if (b) b.scrollTop = prev; $('#overlay').hidden = false; return; }
+  $('#overlay').hidden = false;
+  document.body.style.overflow = 'hidden';
+  const h = $('#sheetTitle'); if (h) { h.setAttribute('tabindex','-1'); h.focus(); }
+}
+function closeSheet(){
+  $('#overlay').hidden = true; document.body.style.overflow = ''; picker = null; draft = null; editReturn = null;
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+}
+const dayName = d => d === 'sat' ? 'Saturday' : 'Sunday';
+
+function openPicker(day, meal){
+  const other = state.plan.slots[day === 'sat' ? 'sun' : 'sat'].dinner;
+  const otherType = byId[other]?.type;
+  const flags = new Set();
+  let hint = '';
+  if (meal === 'dinner' && otherType) {
+    const want = otherType === 'family' ? 'split' : 'family';
+    flags.add(want);
+    hint = `${dayName(day === 'sat' ? 'sun' : 'sat')} already has a ${otherType === 'family' ? 'family' : 'adults + kids'} dinner, so these are ${want === 'family' ? 'family' : 'adults + kids'} dinners.`;
+  }
+  picker = { day, meal, cat:meal, flags, hint };
+  renderPicker();
+}
+function renderPicker(){
+  const { day, meal, cat, flags, hint } = picker;
+  const match = r => (cat === 'all' || r.cat === cat) &&
+    (!flags.has('family') || r.type === 'family') && (!flags.has('split') || r.type === 'split') &&
+    (!flags.has('kid') || r.tags.includes('kid')) && (!flags.has('quick') || r.tags.includes('quick')) &&
+    (!flags.has('weekend') || r.tags.includes('weekend'));
+  const list = allRecipes().filter(match);
+  const current = state.plan.slots[day][meal];
+  const catChips = [['all','All'],...MEALS].map(([k,l]) => `<button class="chip" data-act="fcat" data-k="${k}" aria-pressed="${cat===k}">${l}</button>`).join('');
+  const flagChips = [['family','Family'],['split','Adults + Kids'],['kid','Kid-friendly'],['quick','Quick'],['weekend','Weekend']]
+    .map(([k,l]) => `<button class="chip" data-act="fflag" data-k="${k}" aria-pressed="${flags.has(k)}">${l}</button>`).join('');
+  const items = list.length ? list.map(r => `<article class="pick ${r.id===current?'current':''}">
+      <button class="plate ${plateClass(r)}" data-act="recipe" data-id="${r.id}" data-from="picker" aria-label="Open recipe: ${esc(r.name)}">${r.emoji}</button>
+      <div><button class="name" data-act="recipe" data-id="${r.id}" data-from="picker">${esc(r.name)}</button>${badge(r)}
+        <p class="desc">${esc(r.desc)}</p><div class="meta">${CAT_LABEL[r.cat]}, ${r.time} min</div></div>
+      <button class="btn ${r.id===current?'':'primary'} choose" data-act="choose" data-id="${r.id}">${r.id===current?'Chosen':'Choose'}</button>
+    </article>`).join('')
+    : `<div class="empty-state"><p>No recipes match these filters.</p><button class="btn" data-act="fclear">Clear filters</button></div>`;
+  openSheet(`<div class="panel-head"><h2 id="sheetTitle">${dayName(day)} ${meal}</h2><button class="x" data-act="close" aria-label="Close">×</button></div>
+    <div class="panel-body"><div class="filters" role="group" aria-label="Meal">${catChips}</div>
+    <div class="filters" role="group" aria-label="Filters">${flagChips}</div>
+    ${hint && [...flags].some(f => f==='family'||f==='split') ? `<p class="hint">${hint}</p>` : ''}
+    <div class="list">${items}</div>
+    <button class="btn add-new" data-act="add">+ Add a new recipe</button></div>`);
+}
+
+function openRecipe(id, fromPicker){
+  const r = byId[id];
+  const secs = sectionsOf(r);
+  const steps = Array.isArray(r.steps) ? { all:r.steps } : r.steps;
+  let body = `<div class="card ${plateClass(r)}"><div class="plate" aria-hidden="true">${r.emoji}</div>
+      <div><h3>${esc(r.name)}</h3>${r.type ? `<div style="margin-top:6px">${badge(r).replace('margin-left:6px','')}</div>` : ''}
+      <p>${esc(r.desc)}</p></div></div>
+    <div class="stats"><div class="stat"><span>Time</span><b>${r.time ? r.time + ' min' : '–'}</b></div>
+      <div class="stat"><span>Mama</span><b>${kc(r.kcal && r.kcal[0])}</b></div>
+      <div class="stat"><span>Tata</span><b>${kc(r.kcal && r.kcal[1])}</b></div></div>`;
+  if (r.kids) body += `<div class="note">${esc(r.kids)}</div>`;
+  for (const sec of secs) {
+    const cols = sec.who === 'all' ? ['Mama','Tata','Kid (each)'] : sec.who === 'adults' ? ['Mama','Tata'] : ['Each kid'];
+    const title = sec.who === 'adults' ? `Adults <small>${esc(r.name)}</small>` : sec.who === 'kids' ? `Kids <small>${esc(r.kidsName)}</small>` : 'Ingredients';
+    const rows = sec.items.map(it => {
+      const [nm, u] = ING(it[0]), x = q(sec, it);
+      const note = x.note ? `<small>${esc(x.note)}</small>` : '';
+      if (!u) return `<tr><td>${esc(nm)}</td><td class="q" colspan="${cols.length}">to taste</td></tr>`;
+      const vals = sec.who === 'all' ? [x.m,x.t,x.k] : sec.who === 'adults' ? [x.m,x.t] : [x.k];
+      return `<tr><td>${esc(nm)}${note}</td>${vals.map(v => `<td class="q">${fmt(v,u)}</td>`).join('')}</tr>`;
+    }).join('');
+    body += `<div class="sec"><h4>${title}</h4><div class="tbl-wrap"><table>
+      <thead><tr><th>Ingredient</th>${cols.map(c => `<th class="q">${c}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+    const s = steps[sec.who];
+    if (s) body += `<h4>${sec.who === 'all' ? 'Method' : 'Method'}</h4><ol class="steps">${s.map(t => `<li>${esc(t)}</li>`).join('')}</ol>`;
+    body += `</div>`;
+  }
+  const foot = fromPicker && picker
+    ? `<div class="panel-foot"><button class="btn primary" data-act="choose" data-id="${r.id}">Choose for ${dayName(picker.day)} ${picker.meal}</button></div>` : '';
+  openSheet(`<div class="panel-head">${fromPicker ? `<button class="btn ghost" data-act="back">‹ Back</button>` : ''}
+      <h2 id="sheetTitle" class="sr">${esc(r.name)}</h2><span style="flex:1"></span><button class="btn ghost" data-act="edit" data-id="${r.id}" data-from="${fromPicker ? 'picker' : ''}">Edit</button><button class="x" data-act="close" aria-label="Close">×</button></div>
+    <div class="panel-body">${body}</div>${foot}`);
+}
+
+function askNewPlan(){
+  const p = state.plan;
+  const today = upcomingSaturday();
+  const next = addDays(p.saturday, 7) > today ? addDays(p.saturday, 7) : today;
+  if (!filledCount()) { state.plan = newPlan(next); tab = 'plan'; commit(); return; }
+  openSheet(`<div class="panel-head"><h2 id="sheetTitle">Start a new plan?</h2><button class="x" data-act="close" aria-label="Close">×</button></div>
+    <div class="panel-body"><p>A new, empty plan for ${short(next)}–${short(addDays(next,1))} will replace the current one, together with its shopping list.</p></div>
+    <div class="panel-foot" style="display:flex;gap:10px"><button class="btn" data-act="close" style="flex:1">Keep current</button>
+      <button class="btn primary" data-act="confirmNew" data-sat="${next}" style="flex:1">Start new plan</button></div>`);
+}
+
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2200); }
+
+// --- events ---
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (e.target === $('#overlay')) { if (!draft) closeSheet(); return; }
+  if (!el) return;
+  const a = el.dataset.act;
+  if (a === 'tick') return; // handled by change
+  if (a === 'tab') { tab = el.dataset.tab; closeSheetIfOpen(); render(); window.scrollTo({top:0}); }
+  else if (a === 'pick') openPicker(el.dataset.day, el.dataset.meal);
+  else if (a === 'clear') { state.plan.slots[el.dataset.day][el.dataset.meal] = null; commit(); }
+  else if (a === 'recipe') openRecipe(el.dataset.id, el.dataset.from === 'picker');
+  else if (a === 'back') renderPicker();
+  else if (a === 'close') closeSheet();
+  else if (a === 'fcat') { picker.cat = el.dataset.k; renderPicker(); }
+  else if (a === 'fflag') {
+    const k = el.dataset.k, f = picker.flags;
+    if (f.has(k)) f.delete(k); else { f.add(k); if (k==='family') f.delete('split'); if (k==='split') f.delete('family'); }
+    renderPicker();
+  }
+  else if (a === 'fclear') { picker.flags.clear(); picker.cat = 'all'; renderPicker(); }
+  else if (a === 'choose') {
+    const { day, meal } = picker; const r = byId[el.dataset.id];
+    state.plan.slots[day][meal] = r.id; closeSheet(); commit();
+    toast(`${dayName(day)} ${meal}: ${r.name}`);
+  }
+  else if (a === 'save') { state.plan.status = 'saved'; tab = 'shop'; commit(); window.scrollTo({top:0}); toast('Plan saved as current weekend'); }
+  else if (a === 'new') askNewPlan();
+  else if (a === 'confirmNew') { state.plan = newPlan(el.dataset.sat); tab = 'plan'; closeSheet(); commit(); toast('New weekend plan started'); }
+  else if (a === 'untick') { state.plan.checked = {}; commit(); }
+  else if (a === 'add') {
+    const preset = picker ? { cat: picker.cat !== 'all' ? picker.cat : picker.meal, type: picker.flags.has('split') ? 'split' : 'family' } : {};
+    openEditor(null, preset, picker ? { kind:'picker' } : { kind:'list' });
+  }
+  else if (a === 'edit') openEditor(el.dataset.id, null, picker || el.dataset.from === 'picker' ? { kind:'recipe', id:el.dataset.id, fromPicker:!!picker } : { kind:'recipe', id:el.dataset.id });
+  else if (a === 'edtype') { const was = isSplit(draft); draft.type = el.dataset.k; reshape(was); renderEditor(); }
+  else if (a === 'rowadd') { draft.rows[el.dataset.sec].push(blankRow()); renderEditor(); const rows = document.querySelectorAll(`.ing-row[data-sec="${el.dataset.sec}"] [data-rf=name]`); rows[rows.length-1]?.focus(); }
+  else if (a === 'rowdel') { draft.rows[el.dataset.sec].splice(+el.dataset.i, 1); renderEditor(); }
+  else if (a === 'edsave') saveDraft();
+  else if (a === 'edcancel') leaveEditor(draft.id);
+  else if (a === 'eddel') { if (el.dataset.armed) deleteRecipe(draft.id); else { el.dataset.armed = '1'; el.textContent = 'Tap again to delete'; } }
+  else if (a === 'edrestore') { const id = draft.id; delete state.custom.recipes[id]; commit(); toast('Original recipe restored'); leaveEditor(id); }
+});
+function closeSheetIfOpen(){ if (!$('#overlay').hidden) closeSheet(); }
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset && el.dataset.act === 'tick') {
+    if (el.checked) state.plan.checked[el.dataset.id] = true; else delete state.plan.checked[el.dataset.id];
+    commit();
+  }
+});
+document.addEventListener('input', e => {
+  if (!draft) return;
+  const el = e.target;
+  if (el.dataset.ef && el.dataset.ef !== 'cat') draft[el.dataset.ef] = el.value;
+  else if (el.dataset.rf) {
+    const row = el.closest('.ing-row'), r = draft.rows[row.dataset.sec][+row.dataset.i];
+    r[el.dataset.rf] = el.value;
+    if (el.dataset.rf === 'name') {
+      const all = allIngredients(), n = el.value.trim().toLowerCase();
+      const id = Object.keys(all).find(k => all[k][0].toLowerCase() === n);
+      if (id) { r.unit = all[id][1]; r.group = all[id][2]; row.querySelector('[data-rf=unit]').value = r.unit; row.querySelector('[data-rf=group]').value = r.group; toggleQty(row, r.unit); }
+    }
+    if (el.dataset.rf === 'unit') toggleQty(row, el.value);
+  }
+});
+document.addEventListener('change', e => {
+  if (!draft) return;
+  const el = e.target;
+  if (el.dataset.ef === 'cat') { const was = isSplit(draft); draft.cat = el.value; reshape(was); renderEditor(); }
+  else if (el.dataset.tag) { const t = el.dataset.tag; draft.tags = draft.tags.filter(x => x !== t); if (el.checked) draft.tags.push(t); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#overlay').hidden && !draft) closeSheet(); });
+
+
+/* ---------- recipe library + editor ---------- */
+function renderRecipes(){
+  const all = allRecipes();
+  let html = `<div class="rx"><div class="shop-head"><p>${all.length} recipes. Edit any of them or add your own.</p>
+    <button class="btn primary" data-act="add">Add recipe</button></div>`;
+  for (const [cat, label] of MEALS) {
+    const list = all.filter(r => r.cat === cat);
+    html += `<div class="group"><h3>${label}</h3>`;
+    if (!list.length) html += `<p class="muted">No recipes yet.</p>`;
+    for (const r of list) {
+      const mark = !isBase(r.id) ? 'Yours' : state.custom.recipes[r.id] ? 'Edited' : '';
+      html += `<div class="rx-row"><button class="plate ${plateClass(r)}" data-act="recipe" data-id="${r.id}" aria-label="Open recipe: ${esc(r.name)}">${esc(r.emoji)}</button>
+        <div><button class="name" data-act="recipe" data-id="${r.id}">${esc(r.name)}</button>${badge(r)}${mark ? `<span class="mark">${mark}</span>` : ''}
+        <p class="desc">${esc(r.desc || '')}</p></div>
+        <button class="link" data-act="edit" data-id="${r.id}">Edit</button></div>`;
+    }
+    html += `</div>`;
+  }
+  return html + `</div>`;
+}
+
+let draft = null, editReturn = null;
+const UNITS = [['g','g'],['ml','ml'],['szt.','szt.'],['ząb.','ząb.'],['','to taste']];
+const blankRow = () => ({ name:'', unit:'g', group:'veg', m:'', t:'', k:'', note:'' });
+const isSplit = d => d.cat === 'dinner' && d.type === 'split';
+const filled = rows => rows.filter(r => r.name.trim());
+
+function openEditor(id, preset, ret){
+  const r = id ? byId[id] : null;
+  const d = { id: r ? r.id : null, cat: r ? r.cat : (preset && preset.cat) || 'breakfast', type: (r && r.type) || (preset && preset.type) || 'family',
+    name: r ? r.name : '', kidsName: (r && r.kidsName) || '', emoji: r ? r.emoji : '', time: r && r.time ? r.time : '',
+    tags: r ? [...(r.tags || [])] : [], kcalM: r && r.kcal && r.kcal[0] ? r.kcal[0] : '', kcalT: r && r.kcal && r.kcal[1] ? r.kcal[1] : '',
+    desc: (r && r.desc) || '', kids: (r && r.kids) || '', rows: { all:[], adults:[], kids:[] }, steps: { all:'', adults:'', kids:'' } };
+  if (r) {
+    for (const sec of sectionsOf(r)) d.rows[sec.who] = sec.items.map(it => {
+      const [nm, u, g] = ING(it[0]), x = q(sec, it);
+      return { name:nm, unit:u, group:g, m:x.m || '', t:x.t || '', k:x.k || '', note:x.note || '' };
+    });
+    const st = Array.isArray(r.steps) ? { all:r.steps } : (r.steps || {});
+    for (const k in st) d.steps[k] = (st[k] || []).join('\n');
+  }
+  for (const k of ['all','adults','kids']) if (!d.rows[k].length) d.rows[k] = [blankRow()];
+  draft = d; editReturn = ret || { kind:'list' };
+  renderEditor(true);
+}
+
+// moving between one shared list and the adults/kids split keeps what was typed
+function reshape(wasSplit){
+  const now = isSplit(draft);
+  if (wasSplit === now) return;
+  const R = draft.rows;
+  if (now && !filled(R.adults).length && !filled(R.kids).length && filled(R.all).length) {
+    R.adults = filled(R.all).filter(r => r.m || r.t || !r.unit).map(r => ({ ...r, k:'' }));
+    R.kids = filled(R.all).filter(r => r.k).map(r => ({ ...r, m:'', t:'' }));
+    if (!draft.steps.adults) draft.steps.adults = draft.steps.all;
+  } else if (!now && !filled(R.all).length && (filled(R.adults).length || filled(R.kids).length)) {
+    const map = new Map();
+    for (const r of filled(R.adults)) map.set(r.name.trim().toLowerCase() + '|' + r.unit, { ...r, k:'' });
+    for (const r of filled(R.kids)) { const key = r.name.trim().toLowerCase() + '|' + r.unit; if (map.has(key)) map.get(key).k = r.k; else map.set(key, { ...r, m:'', t:'' }); }
+    R.all = [...map.values()];
+    if (!draft.steps.all) draft.steps.all = [draft.steps.adults, draft.steps.kids].filter(Boolean).join('\n');
+  }
+  for (const k of ['all','adults','kids']) if (!R[k].length) R[k] = [blankRow()];
+}
+
+function toggleQty(row, u){ row.querySelectorAll('.qty input').forEach(i => { i.disabled = (u === ''); }); }
+
+function renderEditor(first){
+  const d = draft, split = isSplit(d), secs = split ? ['adults','kids'] : ['all'];
+  const opt = (arr, v) => arr.map(([k,l]) => `<option value="${esc(k)}" ${k === v ? 'selected' : ''}>${esc(l)}</option>`).join('');
+  const names = [...new Set(Object.values(allIngredients()).map(x => x[0]))].sort((a,b) => a.localeCompare(b,'pl'));
+  const secTitle = { all:'Ingredients', adults:'Adults: ingredients', kids:'Kids: ingredients' };
+  const stepTitle = { all:'Method', adults:'Adults: method', kids:'Kids: method' };
+  const rowHtml = (sec, r, i) => {
+    const qty = sec === 'all' ? [['m','Mama'],['t','Tata'],['k','Kid (each)']] : sec === 'adults' ? [['m','Mama'],['t','Tata']] : [['k','Each kid']];
+    return `<div class="ing-row" data-sec="${sec}" data-i="${i}">
+      <label class="f full"><span>Ingredient</span><input list="ingList" data-rf="name" value="${esc(r.name)}" placeholder="Start typing, e.g. Mozzarella" autocomplete="off"></label>
+      <button class="ing-x" data-act="rowdel" data-sec="${sec}" data-i="${i}" aria-label="Remove ingredient">×</button>
+      <label class="f"><span>Unit</span><select data-rf="unit">${opt(UNITS, r.unit)}</select></label>
+      <label class="f"><span>Shop section</span><select data-rf="group">${opt(GROUPS, r.group)}</select></label>
+      <div class="qty">${qty.map(([k,l]) => `<label class="f"><span>${l}</span><input inputmode="decimal" data-rf="${k}" value="${esc(r[k])}" ${r.unit === '' ? 'disabled' : ''}></label>`).join('')}</div>
+      <label class="f full"><span>Note (optional)</span><input data-rf="note" value="${esc(r.note)}" placeholder="e.g. lub cheddar"></label>
+    </div>`;
+  };
+  const tagBox = (k, l) => `<label class="cb"><input type="checkbox" data-tag="${k}" ${d.tags.includes(k) ? 'checked' : ''}> ${l}</label>`;
+  let body = `<div id="editor" class="ed">
+    <label class="f full"><span>Recipe name</span><input data-ef="name" value="${esc(d.name)}" placeholder="e.g. Naleśniki z serem"></label>
+    <div class="ed-3">
+      <label class="f"><span>Meal</span><select data-ef="cat">${opt(MEALS, d.cat)}</select></label>
+      <label class="f"><span>Time (min)</span><input inputmode="numeric" data-ef="time" value="${esc(d.time)}"></label>
+      <label class="f"><span>Icon (emoji)</span><input data-ef="emoji" value="${esc(d.emoji)}" placeholder="🍽️" maxlength="4"></label>
+    </div>`;
+  if (d.cat === 'dinner') body += `<div class="f full"><span>Dinner type</span><div class="seg" role="group" aria-label="Dinner type">
+      <button class="chip" data-act="edtype" data-k="family" aria-pressed="${d.type === 'family'}">Family</button>
+      <button class="chip" data-act="edtype" data-k="split" aria-pressed="${d.type === 'split'}">Adults + Kids</button></div></div>`;
+  if (split) body += `<label class="f full"><span>Kids' dish</span><input data-ef="kidsName" value="${esc(d.kidsName)}" placeholder="e.g. Makaron z sosem pomidorowym"></label>`;
+  body += `<label class="f full"><span>Short description</span><textarea rows="2" data-ef="desc">${esc(d.desc)}</textarea></label>
+    <div class="f full"><span>Labels</span><div class="cbs">${tagBox('kid','Kid-friendly')}${tagBox('quick','Quick')}${tagBox('weekend','Weekend')}</div></div>
+    <div class="ed-2">
+      <label class="f"><span>Mama, approx. kcal</span><input inputmode="numeric" data-ef="kcalM" value="${esc(d.kcalM)}"></label>
+      <label class="f"><span>Tata, approx. kcal</span><input inputmode="numeric" data-ef="kcalT" value="${esc(d.kcalT)}"></label>
+    </div>
+    <label class="f full"><span>How kids eat it (optional)</span><textarea rows="2" data-ef="kids">${esc(d.kids)}</textarea></label>`;
+  for (const sec of secs) {
+    body += `<h4 class="ed-h">${secTitle[sec]}</h4><div class="ing-list">${d.rows[sec].map((r,i) => rowHtml(sec, r, i)).join('')}</div>
+      <button class="btn add-row" data-act="rowadd" data-sec="${sec}">+ Add ingredient</button>`;
+  }
+  for (const sec of secs) {
+    body += `<label class="f full"><span>${stepTitle[sec]}, one step per line</span><textarea rows="5" data-ef-step="${sec}">${esc(d.steps[sec])}</textarea></label>`;
+  }
+  body += `<datalist id="ingList">${names.map(n => `<option value="${esc(n)}">`).join('')}</datalist></div>`;
+  const edited = d.id && isBase(d.id) && state.custom.recipes[d.id];
+  const left = d.id ? `${edited ? `<button class="btn ghost" data-act="edrestore">Restore original</button>` : ''}<button class="btn ghost danger" data-act="eddel">Delete</button>` : '';
+  openSheet(`<div class="panel-head"><h2 id="sheetTitle">${d.id ? 'Edit recipe' : 'New recipe'}</h2><button class="x" data-act="edcancel" aria-label="Close without saving">×</button></div>
+    <div class="panel-body">${body}<p class="err" id="edErr" role="alert"></p></div>
+    <div class="panel-foot ed-foot"><div class="ed-left">${left}</div><button class="btn" data-act="edcancel">Cancel</button><button class="btn primary" data-act="edsave">Save recipe</button></div>`, !first);
+}
+document.addEventListener('input', e => { if (draft && e.target.dataset.efStep) draft.steps[e.target.dataset.efStep] = e.target.value; });
+
+function saveDraft(){
+  const d = draft;
+  if (!d.name.trim()) { $('#edErr').textContent = 'Add a recipe name to save it.'; $('[data-ef=name]').focus(); return; }
+  const split = isSplit(d);
+  const num = v => { const n = parseFloat(String(v).replace(',', '.')); return isFinite(n) && n > 0 ? n : 0; };
+  const ingId = row => {
+    const name = row.name.trim(), all = allIngredients();
+    let id = Object.keys(all).find(k => all[k][0].toLowerCase() === name.toLowerCase() && all[k][1] === row.unit);
+    if (!id) {
+      const base = 'u_' + (name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'') || 'item');
+      id = base; let n = 2; while (all[id]) id = base + '_' + (n++);
+      state.custom.ingredients[id] = [name, row.unit, row.group];
+    } else if (all[id][2] !== row.group) state.custom.ingredients[id] = [all[id][0], all[id][1], row.group];
+    return id;
+  };
+  const withNote = (arr, r) => r.note.trim() ? arr.concat(r.note.trim()) : arr;
+  const lines = s => s.split('\n').map(x => x.trim()).filter(Boolean);
+  const rec = { id: d.id || 'c_' + Date.now().toString(36), cat:d.cat, name:d.name.trim(), emoji:d.emoji.trim() || '🍽️',
+    time: Math.round(num(d.time)), tags:d.tags.slice(), kcal:[Math.round(num(d.kcalM)), Math.round(num(d.kcalT))],
+    desc:d.desc.trim(), kids:d.kids.trim() };
+  if (d.cat === 'dinner') rec.type = d.type;
+  if (split) {
+    rec.kidsName = d.kidsName.trim();
+    rec.sections = [
+      { who:'adults', items: filled(d.rows.adults).map(r => { const id = ingId(r); return r.unit === '' ? [id] : withNote([id, num(r.m), num(r.t)], r); }) },
+      { who:'kids', items: filled(d.rows.kids).map(r => { const id = ingId(r); return r.unit === '' ? [id] : withNote([id, num(r.k)], r); }) }
+    ];
+    rec.steps = { adults: lines(d.steps.adults), kids: lines(d.steps.kids) };
+  } else {
+    rec.items = filled(d.rows.all).map(r => { const id = ingId(r); return r.unit === '' ? [id] : withNote([id, num(r.m), num(r.t), num(r.k)], r); });
+    rec.steps = lines(d.steps.all);
+  }
+  state.custom.recipes[rec.id] = rec;
+  delete state.custom.deleted[rec.id];
+  commit();
+  toast(d.id ? 'Recipe saved' : 'Recipe added');
+  leaveEditor(rec.id);
+}
+
+function leaveEditor(id){
+  const ret = editReturn || { kind:'list' };
+  draft = null; editReturn = null;
+  if (ret.kind === 'picker' && picker) renderPicker();
+  else if (ret.kind === 'recipe' && id && byId[id]) openRecipe(id, !!(ret.fromPicker && picker));
+  else closeSheet();
+}
+
+function deleteRecipe(id){
+  delete state.custom.recipes[id];
+  if (isBase(id)) state.custom.deleted[id] = true;
+  for (const [d] of DAYS) for (const [m] of MEALS) if (state.plan.slots[d][m] === id) state.plan.slots[d][m] = null;
+  const ret = editReturn; draft = null; editReturn = null;
+  commit(); toast('Recipe deleted');
+  if (ret && (ret.kind === 'picker' || (ret.kind === 'recipe' && ret.fromPicker)) && picker) renderPicker(); else closeSheet();
+}
+
+render();
+</script>
+</body>
+</html>
